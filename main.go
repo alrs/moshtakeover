@@ -43,11 +43,7 @@ func parentMoshPid() (int32, error) {
 		if parent.Pid == 1 {
 			return 0, errors.New("not running under mosh-server")
 		}
-		prc, err = prc.Parent()
-		if err != nil {
-			return 0, err
-		}
-
+		prc = parent
 	}
 }
 
