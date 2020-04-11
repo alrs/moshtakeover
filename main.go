@@ -20,6 +20,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/shirou/gopsutil/process"
@@ -68,14 +69,20 @@ func main() {
 	for _, pid := range pids {
 		p, err := process.NewProcess(pid)
 		if err != nil {
+			if err.Error() == "process does not exist" {
+				// process went away since we gathered pids, this is normal
+				continue
+			}
 			log.Printf("NewProcess: %v", err)
+			log.Printf("error type: %s", reflect.TypeOf(err))
+			continue
 		}
 		uids, err := p.Uids()
 		if err != nil {
 			log.Fatalf("error getting uids: %v", err)
 		}
-		if uidMatch(thisUid, uids) && // this process username matches desired uid
-			pmp != pid { // process is not the parent process
+		if uidMatch(thisUid, uids) && // this process' uid matches desired uid
+			pmp != pid { // process is not our parent mosh-server
 			nameWithNil, err := p.Name()
 			if err != nil {
 				log.Fatal(err)
