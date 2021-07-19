@@ -20,7 +20,6 @@ import (
 	"errors"
 	"log"
 	"os"
-	"reflect"
 	"strings"
 
 	"github.com/shirou/gopsutil/process"
@@ -69,12 +68,11 @@ func main() {
 	for _, pid := range pids {
 		p, err := process.NewProcess(pid)
 		if err != nil {
-			if err.Error() == "process does not exist" {
+			if errors.Is(err, process.ErrorProcessNotRunning) {
 				// process went away since we gathered pids, this is normal
 				continue
 			}
-			log.Printf("NewProcess: %v", err)
-			log.Printf("error type: %s", reflect.TypeOf(err))
+			log.Printf("NewProcess:%v type:%t", err, err)
 			continue
 		}
 		uids, err := p.Uids()
