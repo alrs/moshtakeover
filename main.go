@@ -72,7 +72,7 @@ func main() {
 				// process went away since we gathered pids, this is normal
 				continue
 			}
-			log.Printf("NewProcess:%v type:%t", err, err)
+			log.Printf("NewProcess err:%v type:%T", err, err)
 			continue
 		}
 		uids, err := p.Uids()
